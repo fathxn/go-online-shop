@@ -23,6 +23,7 @@ func ConnectPostgres(cfg config.DBConfig) (db *sqlx.DB, err error) {
 	}
 
 	if err = db.Ping(); err != nil {
+		db = nil
 		return
 	}
 
