@@ -45,3 +45,28 @@ func (s service) register(ctx context.Context, req RegisterRequestPayload) (err 
 
 	return s.repo.CreateAuth(ctx, authEntity)
 }
+
+func (s service) login(ctx context.Context, req LoginRequestPayload) (token string, err error) {
+	authEntity := NewFromLoginRequest(req)
+
+	if err = authEntity.ValidateEmail(); err != nil {
+		return
+	}
+
+	if err = authEntity.ValidatePassword(); err != nil {
+		return
+	}
+
+	model, err := s.repo.GetAuthByEmail(ctx, authEntity.Email)
+	if err != nil {
+		return
+	}
+
+	if err = authEntity.VerifyPasswordFromPlain(model.Password); err != nil {
+		err = response.ErrPasswordNotMatch
+		return
+	}
+
+	token, err = authEntity.GenerateToken(config.Cfg.App.Encryption.JWTSecret)
+	return
+}

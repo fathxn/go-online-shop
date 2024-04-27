@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go-online-shop/external/database"
+	"go-online-shop/infra/response"
 	"go-online-shop/internal/config"
 	"testing"
 )
@@ -38,10 +39,19 @@ func TestRegister_Success(t *testing.T) {
 }
 
 func TestRegister_Fail(t *testing.T) {
-	req := RegisterRequestPayload{
-		Email:    "test@test.com",
-		Password: "password123",
-	}
-	err := svc.register(context.Background(), req)
-	require.Nil(t, err)
+	t.Run("error email already used", func(t *testing.T) {
+		// preparation for duplicate email
+		email := fmt.Sprintf("%v@test.com", uuid.NewString())
+		req := RegisterRequestPayload{
+			Email:    email,
+			Password: "password123",
+		}
+		err := svc.register(context.Background(), req)
+		require.Nil(t, err)
+		// end preparation
+
+		err = svc.register(context.Background(), req)
+		require.NotNil(t, err)
+		require.Equal(t, response.ErrEmailAlreadyUsed, err)
+	})
 }

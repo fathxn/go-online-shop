@@ -13,4 +13,5 @@ var (
 	ErrPasswordInvalidLength = errors.New("password must have minimum 6 characters")
 	ErrAuthIsNotExists       = errors.New("auth is not exists")
 	ErrEmailAlreadyUsed      = errors.New("email already used")
+	ErrPasswordNotMatch      = errors.New("password not match")
 )
