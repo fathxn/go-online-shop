@@ -8,6 +8,7 @@ import (
 	"go-online-shop/external/database"
 	"go-online-shop/infra/response"
 	"go-online-shop/internal/config"
+	"log"
 	"testing"
 )
 
@@ -54,4 +55,24 @@ func TestRegister_Fail(t *testing.T) {
 		require.NotNil(t, err)
 		require.Equal(t, response.ErrEmailAlreadyUsed, err)
 	})
+}
+
+func TestLogin_Success(t *testing.T) {
+	email := fmt.Sprintf("%v@test.com", uuid.NewString())
+	req := RegisterRequestPayload{
+		Email:    email,
+		Password: "password123",
+	}
+	err := svc.register(context.Background(), req)
+	require.Nil(t, err)
+
+	reqLogin := LoginRequestPayload{
+		Email:    email,
+		Password: "password123",
+	}
+
+	token, err := svc.login(context.Background(), reqLogin)
+	require.Nil(t, err)
+	require.NotEmpty(t, token)
+	log.Printf("token: %s", token)
 }
