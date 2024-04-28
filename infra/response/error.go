@@ -17,6 +17,10 @@ var (
 	ErrAuthIsNotExists       = errors.New("auth is not exists")
 	ErrEmailAlreadyUsed      = errors.New("email already used")
 	ErrPasswordNotMatch      = errors.New("password not match")
+	ErrProductRequired       = errors.New("product is required")
+	ErrProductInvalid        = errors.New("product name must have minimum 4 characters")
+	ErrStockInvalid          = errors.New("stock must be greater than 0")
+	ErrPriceInvalid          = errors.New("price must be greater than 0")
 )
 
 type Error struct {
@@ -40,6 +44,7 @@ func (e Error) Error() string {
 var (
 	ErrorGeneral    = NewError("general error", "999999", http.StatusInternalServerError)
 	ErrorBadRequest = NewError("bad request", "40000", http.StatusBadRequest)
+	ErrorNotFound   = NewError(ErrNotFound.Error(), "40400", http.StatusNotFound)
 )
 
 var (
@@ -47,10 +52,14 @@ var (
 	ErrorEmailInvalid          = NewError(ErrEmailInvalid.Error(), "40002", http.StatusBadRequest)
 	ErrorPasswordRequired      = NewError(ErrPasswordRequired.Error(), "40003", http.StatusBadRequest)
 	ErrorPasswordInvalidLength = NewError(ErrPasswordInvalidLength.Error(), "40004", http.StatusBadRequest)
-	ErrorAuthIsNotExists       = NewError(ErrAuthIsNotExists.Error(), "40401", http.StatusNotFound)
-	ErrorEmailAlreadyUsed      = NewError(ErrEmailAlreadyUsed.Error(), "40901", http.StatusConflict)
-	ErrorPasswordNotMatch      = NewError(ErrPasswordNotMatch.Error(), "40101", http.StatusUnauthorized)
-	ErrorNotFound              = NewError(ErrNotFound.Error(), "40400", http.StatusNotFound)
+	ErrorProductRequired       = NewError(ErrProductRequired.Error(), "40005", http.StatusBadRequest)
+	ErrorProductInvalid        = NewError(ErrProductInvalid.Error(), "40006", http.StatusBadRequest)
+	ErrorStockInvalid          = NewError(ErrStockInvalid.Error(), "40007", http.StatusBadRequest)
+	ErrorPriceInvalid          = NewError(ErrPriceInvalid.Error(), "40008", http.StatusBadRequest)
+
+	ErrorAuthIsNotExists  = NewError(ErrAuthIsNotExists.Error(), "40401", http.StatusNotFound)
+	ErrorEmailAlreadyUsed = NewError(ErrEmailAlreadyUsed.Error(), "40901", http.StatusConflict)
+	ErrorPasswordNotMatch = NewError(ErrPasswordNotMatch.Error(), "40101", http.StatusUnauthorized)
 )
 
 var (

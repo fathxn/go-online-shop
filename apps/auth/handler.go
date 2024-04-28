@@ -59,13 +59,11 @@ func (h handler) login(ctx *fiber.Ctx) error {
 	}
 
 	token, err := h.svc.login(ctx.UserContext(), req)
-
 	if err != nil {
 		myErr, ok := response.ErrorMapping[err.Error()]
 		if !ok {
 			myErr = response.ErrorGeneral
 		}
-
 		return infrafiber.NewResponse(
 			infrafiber.WithMessage(err.Error()),
 			infrafiber.WithError(myErr),
@@ -77,6 +75,6 @@ func (h handler) login(ctx *fiber.Ctx) error {
 		infrafiber.WithPayload(map[string]interface{}{
 			"access_token": token,
 		}),
-		infrafiber.WithMessage("register fail"),
+		infrafiber.WithMessage("login success"),
 	).Send(ctx)
 }
