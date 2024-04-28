@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"go-online-shop/apps/auth"
 	"go-online-shop/external/database"
 	"go-online-shop/internal/config"
 	"log"
@@ -20,4 +22,13 @@ func main() {
 	if db != nil {
 		log.Println("Successfully connected to database")
 	}
+
+	router := fiber.New(fiber.Config{
+		Prefork: true,
+		AppName: config.Cfg.App.Name,
+	})
+
+	auth.Init(router, db)
+
+	router.Listen(config.Cfg.App.Port)
 }

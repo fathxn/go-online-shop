@@ -58,6 +58,7 @@ func WithError(err error) func(*Response) *Response {
 
 		r.Error = myErr.Message
 		r.ErrorCode = myErr.Code
+		r.HttpCode = myErr.HttpCode
 		return r
 	}
 }
