@@ -64,3 +64,27 @@ func TestListProduct_Success(t *testing.T) {
 	require.NotNil(t, products)
 	log.Printf("%+v", products)
 }
+
+func TestProductDetail_Success(t *testing.T) {
+	req := CreateProductRequestPayload{
+		Name:  "Baju Baru",
+		Stock: 10,
+		Price: 10_000,
+	}
+	err := svc.CreateProduct(context.Background(), req)
+	require.Nil(t, err)
+
+	products, err := svc.ListProducts(context.Background(), ListProductRequestPayload{
+		Cursor: 0,
+		Size:   10,
+	})
+	require.Nil(t, err)
+	require.NotNil(t, products)
+	require.Greater(t, len(products), 0)
+
+	product, err := svc.ProductDetail(context.Background(), products[0].SKU)
+	require.Nil(t, err)
+	require.NotEmpty(t, product)
+
+	log.Printf("%+v", product)
+}
