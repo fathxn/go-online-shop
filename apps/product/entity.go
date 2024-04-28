@@ -1,6 +1,7 @@
 package product
 
 import (
+	"github.com/google/uuid"
 	"go-online-shop/infra/response"
 	"time"
 )
@@ -13,6 +14,30 @@ type Product struct {
 	Price     int       `db:"price"`
 	CreatedAt time.Time `db:"created_at"`
 	UpdatedAt time.Time `db:"updated_at"`
+}
+
+type ProductPagination struct {
+	Cursor int `json:"cursor"`
+	Size   int `json:"size"`
+}
+
+func NewProductPaginationFromListProductRequest(req ListProductRequestPayload) ProductPagination {
+	req = req.GenerateDefaultValue()
+	return ProductPagination{
+		Cursor: req.Cursor,
+		Size:   req.Size,
+	}
+}
+
+func NewProductFromCreateProductRequest(req CreateProductRequestPayload) Product {
+	return Product{
+		SKU:       uuid.NewString(),
+		Name:      req.Name,
+		Stock:     req.Stock,
+		Price:     req.Price,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 }
 
 func (p Product) Validate() (err error) {
