@@ -42,3 +42,31 @@ func (h handler) CreateProduct(ctx *fiber.Ctx) error {
 		infrafiber.WithMessage("product created successfully"),
 	).Send(ctx)
 }
+
+func (h handler) GetListProducts(ctx *fiber.Ctx) error {
+	var req = ListProductRequestPayload{}
+
+	if err := ctx.QueryParser(&req); err != nil {
+		return infrafiber.NewResponse(
+			infrafiber.WithMessage("invalid payload"),
+			infrafiber.WithError(response.ErrorBadRequest),
+		).Send(ctx)
+	}
+
+	//if err := h.svc.CreateProduct(ctx.UserContext(), req); err != nil {
+	//	myErr, ok := response.ErrorMapping[err.Error()]
+	//	if !ok {
+	//		myErr = response.ErrorGeneral
+	//	}
+	//	return infrafiber.NewResponse(
+	//		infrafiber.WithMessage("invalid payload"),
+	//		infrafiber.WithError(myErr),
+	//	).Send(ctx)
+	//}
+
+	return infrafiber.NewResponse(
+		infrafiber.WithHttpCode(http.StatusCreated),
+		infrafiber.WithMessage("product created successfully"),
+		infrafiber.WithPayload(req),
+	).Send(ctx)
+}

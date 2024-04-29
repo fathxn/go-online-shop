@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"go-online-shop/apps/auth"
+	"go-online-shop/apps/product"
 	"go-online-shop/external/database"
 	"go-online-shop/internal/config"
 	"log"
@@ -29,6 +30,6 @@ func main() {
 	})
 
 	auth.Init(router, db)
-
+	product.Init(router, db)
 	router.Listen(config.Cfg.App.Port)
 }
