@@ -79,3 +79,25 @@ func (p Product) ValidatePrice() (err error) {
 	}
 	return
 }
+
+func (p Product) ToProductListResponse() ProductListResponse {
+	return ProductListResponse{
+		Id:    p.Id,
+		SKU:   p.SKU,
+		Name:  p.Name,
+		Stock: p.Stock,
+		Price: p.Price,
+	}
+}
+
+func (p Product) ToProductDetailResponse() ProductDetailResponse {
+	return ProductDetailResponse{
+		Id:        p.Id,
+		SKU:       p.SKU,
+		Name:      p.Name,
+		Stock:     p.Stock,
+		Price:     p.Price,
+		CreatedAt: p.CreatedAt,
+		UpdatedAt: p.UpdatedAt,
+	}
+}

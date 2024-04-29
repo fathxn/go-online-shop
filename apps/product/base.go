@@ -14,5 +14,6 @@ func Init(router fiber.Router, db *sqlx.DB) {
 	{
 		productRoute.Get("", handler.GetListProducts)
 		productRoute.Post("", handler.CreateProduct)
+		productRoute.Get("/sku/:sku", handler.GetProductDetail)
 	}
 }
