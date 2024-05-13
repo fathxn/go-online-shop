@@ -14,26 +14,41 @@ type TransactionRepository interface {
 }
 type ProductRepository interface {
 	GetProductBySku(ctx context.Context, productSKU string) (product Product, err error)
+	UpdateProductStock(ctx context.Context, productId int, newStock uint) (err error)
 }
 
 type service struct {
 	repo Repository
 }
 
-func (s service) CreateTransaction(ctx context.Context, email, productSKU string) (err error) {
-	myProduct, err := s.repo.GetProductBySku(ctx, productSKU)
+func newService(repo Repository) service {
+	return service{repo: repo}
+}
+
+func (s service) CreateTransaction(ctx context.Context, req CreateTransactionRequestPayload) (err error) {
+	myProduct, err := s.repo.GetProductBySku(ctx, req.ProductSKU)
 	if err != nil {
 		return
 	}
 
-	if myProduct.IsExists() {
+	if !myProduct.IsExists() {
 		err = response.ErrNotFound
 		return
 	}
 
-	trx := NewTransaction(email)
-	trx.FromProduct(myProduct)
-	trx.SetProductJSON(myProduct)
+	trx := NewTransactionFromCreateRequest(req)
+	trx.FromProduct(myProduct).
+		SetGrandTotal().
+		SetPlatformFee(1_000)
 
+	if err = trx.Validate(); err != nil {
+		return
+	}
+
+	if err = trx.ValidateStok(uint8(myProduct.Stock)); err != nil {
+		return
+	}
+
+	err = s.repo.CreateTransaction(ctx, trx)
 	return
 }

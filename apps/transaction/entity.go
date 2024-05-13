@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"encoding/json"
+	"go-online-shop/infra/response"
 	"time"
 )
 
@@ -53,22 +54,56 @@ func NewTransaction(email string) Transaction {
 	}
 }
 
+func NewTransactionFromCreateRequest(req CreateTransactionRequestPayload) Transaction {
+	return Transaction{
+		Email:     req.Email,
+		Amount:    req.Amount,
+		Status:    TransactionStatus_Created,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+}
+
+func (t Transaction) Validate() (err error) {
+	if t.Amount == 0 {
+		return response.ErrAmountInvalid
+	}
+	return
+}
+
+func (t Transaction) ValidateStok(productStock uint8) (err error) {
+	if t.Amount > productStock {
+		return response.ErrAmountGreaterThanStock
+	}
+	return
+}
+
 func (t *Transaction) SetSubTotal() {
 	if t.SubTotal == 0 {
 		t.SubTotal = t.ProductPrice * uint(t.Amount)
 	}
 }
 
-func (t *Transaction) SetGrandTotal() {
+func (t *Transaction) SetPlatformFee(platformFee uint) {
+	t.PlatformFee = platformFee
+}
+
+// set subtotal and grandtotal
+func (t *Transaction) SetGrandTotal() *Transaction {
 	if t.GrandTotal == 0 {
 		t.SetSubTotal()
 		t.GrandTotal = t.SubTotal + t.PlatformFee
 	}
+	return t
 }
 
-func (t *Transaction) FromProduct(product Product) {
+// set product id, price, and json
+func (t *Transaction) FromProduct(product Product) *Transaction {
 	t.ProductId = uint(product.Id)
 	t.ProductPrice = uint(product.Price)
+
+	t.SetProductJSON(product)
+	return t
 }
 
 func (t *Transaction) SetProductJSON(product Product) (err error) {

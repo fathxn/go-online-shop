@@ -10,6 +10,7 @@ var (
 )
 
 var (
+	//auth
 	ErrEmailRequired         = errors.New("email is required")
 	ErrEmailInvalid          = errors.New("email is invalid")
 	ErrPasswordRequired      = errors.New("password is required")
@@ -17,10 +18,16 @@ var (
 	ErrAuthIsNotExists       = errors.New("auth is not exists")
 	ErrEmailAlreadyUsed      = errors.New("email already used")
 	ErrPasswordNotMatch      = errors.New("password not match")
-	ErrProductRequired       = errors.New("product is required")
-	ErrProductInvalid        = errors.New("product name must have minimum 4 characters")
-	ErrStockInvalid          = errors.New("stock must be greater than 0")
-	ErrPriceInvalid          = errors.New("price must be greater than 0")
+
+	// products
+	ErrProductRequired = errors.New("product is required")
+	ErrProductInvalid  = errors.New("product name must have minimum 4 characters")
+	ErrStockInvalid    = errors.New("stock must be greater than 0")
+	ErrPriceInvalid    = errors.New("price must be greater than 0")
+
+	// transactiions
+	ErrAmountInvalid          = errors.New("invalid amount")
+	ErrAmountGreaterThanStock = errors.New("amount greater than stock")
 )
 
 type Error struct {
@@ -56,6 +63,7 @@ var (
 	ErrorProductInvalid        = NewError(ErrProductInvalid.Error(), "40006", http.StatusBadRequest)
 	ErrorStockInvalid          = NewError(ErrStockInvalid.Error(), "40007", http.StatusBadRequest)
 	ErrorPriceInvalid          = NewError(ErrPriceInvalid.Error(), "40008", http.StatusBadRequest)
+	ErrorInvalidAmount         = NewError(ErrProductInvalid.Error(), "40009", http.StatusBadRequest)
 
 	ErrorAuthIsNotExists  = NewError(ErrAuthIsNotExists.Error(), "40401", http.StatusNotFound)
 	ErrorEmailAlreadyUsed = NewError(ErrEmailAlreadyUsed.Error(), "40901", http.StatusConflict)
