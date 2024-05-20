@@ -2,19 +2,28 @@ package transaction
 
 import (
 	"context"
+	"github.com/jmoiron/sqlx"
 	"go-online-shop/infra/response"
 )
 
 type Repository interface {
+	TransactionDBRepository
 	TransactionRepository
 	ProductRepository
 }
+
+type TransactionDBRepository interface {
+	Begin() (tx *sqlx.Tx, err error)
+	Rollback(tx *sqlx.Tx) (err error)
+	Commit(tx *sqlx.Tx) (err error)
+}
+
 type TransactionRepository interface {
-	CreateTransaction(ctx context.Context, trx Transaction) (err error)
+	CreateTransactionWithTx(ctx context.Context, tx *sqlx.Tx, trx Transaction) (err error)
 }
 type ProductRepository interface {
 	GetProductBySku(ctx context.Context, productSKU string) (product Product, err error)
-	UpdateProductStock(ctx context.Context, productId int, newStock uint) (err error)
+	UpdateProductStockWithTx(ctx context.Context, tx *sqlx.Tx, product Product) (err error)
 }
 
 type service struct {
@@ -49,6 +58,22 @@ func (s service) CreateTransaction(ctx context.Context, req CreateTransactionReq
 		return
 	}
 
-	err = s.repo.CreateTransaction(ctx, trx)
+	tx, err := s.repo.Begin()
+	if err != nil {
+		return
+	}
+	defer s.repo.Rollback(tx)
+
+	if err = s.repo.CreateTransactionWithTx(ctx, tx, trx); err != nil {
+		return
+	}
+
+	if err = s.repo.UpdateProductStockWithTx(ctx, tx, myProduct); err != nil {
+		return
+	}
+
+	if err = s.repo.Commit(tx); err != nil {
+		return
+	}
 	return
 }
